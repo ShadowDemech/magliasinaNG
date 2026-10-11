@@ -136,6 +136,10 @@ The October 2022 photos are more recent than the orthophoto and the official sur
 - The façades are rebuilt from data (use, period, floors) and from the colours seen in the photos: the number and position of windows, balconies and arcades are plausible but not copied one by one.
 - Tunnels are not built. The full list, with an issue for each limitation, is in the project README: https://github.com/wintrymichi/magliasinaNG#known-limitations
 
+## Licence
+
+Free for non-commercial use under CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/): play, share and modify it, crediting "Malcantone · BeamNG.drive by wintrymichi" (https://github.com/wintrymichi/magliasinaNG). Commercial use is not allowed without permission and a paid licence: write to info@wintrymichi.ch. The data sources below keep their own licences.
+
 ## Sources and licences
 
 - © swisstopo: swissALTI3D, SWISSIMAGE, swissBUILDINGS3D, swissSURFACE3D, swissTLM3D, swissNAMES3D.

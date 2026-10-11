@@ -1,0 +1,61 @@
+Malcantone · BeamNG.drive (magliasinaNG)
+Copyright (c) 2026 wintrymichi (https://wintrymichi.ch)
+
+FREE FOR NON-COMMERCIAL USE. COMMERCIAL USE NEEDS PERMISSION.
+
+Except where noted below, this project (the BeamNG.drive map and mod, its
+textures, models and screenshots, the Python pipeline and other scripts,
+the documentation and the website in web/) is licensed under the
+
+    Creative Commons Attribution-NonCommercial 4.0 International License
+    (CC BY-NC 4.0)
+    Summary:   https://creativecommons.org/licenses/by-nc/4.0/
+    Full text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+In short, you may, for free:
+  - download, play and share the map and the mod;
+  - change it, build on it and share your changes;
+as long as you
+  - give credit ("Malcantone · BeamNG.drive by wintrymichi", with a link to
+    https://github.com/wintrymichi/magliasinaNG) and say what you changed;
+  - do not use it, or anything made from it, for commercial purposes.
+
+Commercial use
+--------------
+Commercial use is not allowed without written permission from the author
+and a paid licence. This includes, for example, selling the map or a mod
+based on it, putting it behind a paywall or a paid subscription, bundling it
+with a paid product, or using it in paid work or advertising.
+
+To ask for permission and a commercial licence, write to:
+
+    info@wintrymichi.ch
+
+Third-party data
+----------------
+The licence above covers only the author's own work. The data the map is
+built from keeps its own licence and attribution, which must be kept in any
+copy or derivative:
+
+  - swisstopo open geodata (swissALTI3D, swissSURFACE3D, SWISSIMAGE,
+    swissBUILDINGS3D, swissTLM3D, swissNAMES3D): (c) swisstopo.
+  - Official cadastral survey of Canton Ticino (Ufficio del catasto e dei
+    riordini fondiari, via geodienste.ch).
+  - Federal Register of Buildings and Dwellings (Federal Statistical Office).
+  - OpenStreetMap: (c) OpenStreetMap contributors. The OpenStreetMap
+    extracts in beamng/dati/osm_*.json.gz are made available under the Open
+    Database License (ODbL) 1.0 (https://opendatacommons.org/licenses/odbl/),
+    not under CC BY-NC 4.0.
+  - Copernicus DEM GLO-30: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and
+    Space GmbH 2014-2018, provided under COPERNICUS by the European Union and
+    ESA.
+  - Google Street View: the panorama metadata in the repository root
+    (panoramas*.json, panoramas.csv, panoramas.geojson, cameras.json) refers
+    to Google imagery and is subject to Google's terms. No Street View image
+    is distributed.
+  - BeamNG.drive and its vanilla assets belong to BeamNG GmbH. The mod only
+    references them and does not include them; using the mod also requires
+    following BeamNG's own terms.
+
+This is a fan project, not affiliated with BeamNG GmbH, swisstopo, Canton
+Ticino or Google.
