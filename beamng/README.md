@@ -729,6 +729,9 @@ A review of the v2.0 level compared with real sources: the 2024 SWISSIMAGE 10 cm
 
 ## Sources and licences
 
+The project's own work is under CC BY-NC 4.0, free for non-commercial use; commercial use needs permission and a paid licence (info@wintrymichi.ch). See [`LICENSE`](../LICENSE). The sources below keep their own licences.
+
+
 - © swisstopo: swissALTI3D, SWISSIMAGE 10 cm, swissBUILDINGS3D 3.0, swissSURFACE3D (open geodata of the Swiss Confederation).
 - Official survey: Ufficio del catasto e dei riordini fondiari (Cadastre and Land Consolidation Office), Canton Ticino (via geodienste.ch).
 - © swisstopo: swissTLM3D (road and trail network, bridges), swissNAMES3D (villages), SWISSIMAGE 2 m (v2.0).

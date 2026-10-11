@@ -9,6 +9,7 @@
 ![Scale](https://img.shields.io/badge/scale-1%3A1-brightgreen)
 ![Area](https://img.shields.io/badge/area-56%20km%C2%B2-informational)
 ![Data](https://img.shields.io/badge/data-swisstopo%20%C2%B7%20MU%20TI%20%C2%B7%20OSM-lightgrey)
+[![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](LICENSE)
 [![Website](https://img.shields.io/badge/website-wintrymichi.ch-00549b)](https://wintrymichi.ch)
 
 **[wintrymichi.ch](https://wintrymichi.ch)** · [Download v2.8](https://github.com/wintrymichi/magliasinaNG/releases/latest)
@@ -21,7 +22,7 @@ The Malcantone is the hilly corner of Ticino west of Lugano, between Lake Lugano
 
 Nothing is modelled by hand. A Python pipeline builds the whole map from open data: swisstopo (terrain, roads, buildings, aerial photos), the official cadastral survey of Canton Ticino, the Federal Register of Buildings and OpenStreetMap. Google Street View panoramas are used only as a **visual reference** (poses, measurements, comparisons). No Street View image is in the repository or in the map: everything you see in the photos (façades, shutters, signs, guardrails, walls) is redrawn with original textures.
 
-**Contents:** [Quick start](#quick-start) · [Where to drive](#where-to-drive) · [Troubleshooting](#troubleshooting) · [At a glance](#at-a-glance) · [Gallery](#gallery) · [How the map is made](#how-the-map-is-made) · [Quality and verification](#quality-and-verification) · [Known limitations](#known-limitations) · [Repository layout](#repository-layout) · [Where to read more](#where-to-read-more) · [The panorama dataset](#the-panorama-dataset) · [Sources and licences](#sources-and-licences)
+**Contents:** [Quick start](#quick-start) · [Where to drive](#where-to-drive) · [Troubleshooting](#troubleshooting) · [At a glance](#at-a-glance) · [Gallery](#gallery) · [How the map is made](#how-the-map-is-made) · [Quality and verification](#quality-and-verification) · [Known limitations](#known-limitations) · [Repository layout](#repository-layout) · [Where to read more](#where-to-read-more) · [The panorama dataset](#the-panorama-dataset) · [Licence](#licence) · [Sources and licences](#sources-and-licences)
 
 ## Quick start
 
@@ -521,6 +522,14 @@ The views are named `NNNN_<panoId>_<direction>_p<pitch>.jpg`: the direction is r
 **Coverage.** Almost all images are from October 2022; three panoramas from 2013 cover the spots where 2022 is missing. Between 1.28 and 1.36 km from the start (45.9858, 8.8692 → 45.9869, 8.8694) there is a gap of about 110 m with no panoramas on any nearby date. The pole and shadow of the Google car are visible at the bottom of the `p00` views towards `fwd`/`back`.
 
 **3D reconstruction.** The `viste/` work with COLMAP, RealityCapture and Metashape (known intrinsics: fx = fy = 800 px, cx = 800, cy = 600, no distortion; the GPS positions in `cameras.json` serve as georeferencing); Metashape also accepts the spherical panoramas ("Spherical" camera); for Gaussian Splatting or NeRF go through the `viste/` with COLMAP first.
+
+## Licence
+
+The map, the mod and this repository are **free for non-commercial use** under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): you can play, share and modify them, as long as you credit the project and don't make money with them.
+
+**Commercial use is not allowed without permission and a paid licence** (for example selling the map or a mod based on it, a paywall, a paid bundle, paid work or advertising). To ask, write to **[info@wintrymichi.ch](mailto:info@wintrymichi.ch)**.
+
+The third-party data below keeps its own licence: the OpenStreetMap extracts stay under the ODbL. The full terms are in [`LICENSE`](LICENSE).
 
 ## Sources and licences
 
