@@ -35,7 +35,7 @@ K = 1.0001374973449562          # LV95 scale factor at the origin (pyproj get_fa
 # pass above Gravesano to Arosio, the cantonal road Ponte Tresa - Caslano - Magliaso, Caslano - Torrazza;
 # v2.8: Arosio - Mugena - Breno - Miglieglia - Novaggio);
 # see area.py
-BOUNDARY = [(47.425, 7.785), (47.425, 7.825), (47.460, 7.825), (47.460, 7.785)]
+BOUNDARY = [(47.435, 7.790), (47.435, 7.850), (47.470, 7.850), (47.470, 7.790)]
 AREA_MARGIN = 150.0
 ROUTE_MARGIN = 60.0
 EXTRA_ROAD_MARGIN = 150.0
