@@ -1,4 +1,4 @@
-"""Download Ticino cadastral survey (Misurazione ufficiale, MOpublic) layers for the map
+﻿"""Download Ticino cadastral survey (Misurazione ufficiale, MOpublic) layers for the map
 from the geodienste.ch WFS (open data, attribution required):
   LCSF  copertura del suolo (road, sidewalk, island, building, garden, forest, water ...)
   SOSF / SOLI / SOPT  oggetti singoli as surfaces / lines / points (walls, stairs, bridges ...)
@@ -12,7 +12,7 @@ import shapely
 from config import DATA
 import area
 
-WFS = "https://geodienste.ch/db/av_0/ita"
+WFS = "https://geodienste.ch/db/av_0/deu"
 LAYERS = ["LCSF", "SOSF", "SOLI", "SOPT"]
 TILE = 1024.0
 MARGIN = 100.0
@@ -68,3 +68,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

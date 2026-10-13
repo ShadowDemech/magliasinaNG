@@ -1,4 +1,4 @@
-"""Shared paths and the single coordinate system used by every pipeline step.
+﻿"""Shared paths and the single coordinate system used by every pipeline step.
 
 World frame (BeamNG): x = east, y = north, z = up, metres, true ground scale.
   x = (E - E0) / K,  y = (N - N0) / K,  z = orthometric height (LN02, m a.s.l.)
@@ -14,7 +14,7 @@ DATASET = os.environ.get("MAGLIASO_DATASET") or r"C:\Users\michi\Documents\magli
 ROOT = os.environ.get("MAGLIASO_ROOT") or r"D:\beamng_magliaso"                         # heavy data / cache
 DATA = os.path.join(ROOT, "data")
 WORK = os.path.join(ROOT, "work")
-LEVEL_NAME = "magliaso_pura"
+LEVEL_NAME = "zunzgen"
 BEAMNG_USER = os.environ.get("MAGLIASO_BEAMNG_USER") or r"C:\Users\michi\AppData\Local\BeamNG\BeamNG.drive\current"
 BEAMNG_GAME = os.environ.get("MAGLIASO_BEAMNG_GAME") or r"C:\Program Files (x86)\Steam\steamapps\common\BeamNG.drive"
 # the released level (zip) whose copies of vanilla files stand in for the game install when
@@ -25,7 +25,7 @@ REFERENCE_ZIP = os.environ.get("MAGLIASO_REFERENCE_ZIP") or os.path.join(ROOT, "
 LEVEL_DIR = os.environ.get("MAGLIASO_LEVEL_DIR") or os.path.join(BEAMNG_USER, "levels", LEVEL_NAME)
 
 # map origin (LV95) = centre of the Street View route, rounded to the metre
-E0, N0 = 2710830.0, 1094360.0
+E0, N0 = 2627500.0, 1255000.0
 K = 1.0001374973449562          # LV95 scale factor at the origin (pyproj get_factors)
 # playable area (v2.0, Malcantone): the boundary drawn by the user (WGS84 lat, lon), widened by
 # AREA_MARGIN m and joined with the Street View route (ROUTE_MARGIN m around it) and with the
@@ -35,7 +35,7 @@ K = 1.0001374973449562          # LV95 scale factor at the origin (pyproj get_fa
 # pass above Gravesano to Arosio, the cantonal road Ponte Tresa - Caslano - Magliaso, Caslano - Torrazza;
 # v2.8: Arosio - Mugena - Breno - Miglieglia - Novaggio);
 # see area.py
-BOUNDARY = [(45.967056, 8.858833), (46.041250, 8.923417), (46.018500, 8.803833), (45.993111, 8.788028)]
+BOUNDARY = [(47.425, 7.785), (47.425, 7.825), (47.460, 7.825), (47.460, 7.785)]
 AREA_MARGIN = 150.0
 ROUTE_MARGIN = 60.0
 EXTRA_ROAD_MARGIN = 150.0
@@ -84,3 +84,4 @@ for _d in (DATA, WORK):
 # guard rails) are used. v2.2: this is the default; MAGLIASO_NO_PHOTO_TEXTURES=0 brings back the
 # photo textures of the local v1.x builds, for private study only.
 NO_PHOTO = os.environ.get("MAGLIASO_NO_PHOTO_TEXTURES", "1") != "0"
+

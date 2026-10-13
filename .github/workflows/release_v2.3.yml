@@ -1,12 +1,12 @@
-# Release v2.3 della mappa BeamNG (Malcantone): il livello della v2.2 costruito da zero su un server GitHub con
+﻿# Release v2.3 della mappa BeamNG (Malcantone): il livello della v2.2 costruito da zero su un server GitHub con
 # gli stessi dati aperti (swisstopo, misurazione ufficiale, Registro degli edifici, OpenStreetMap e i risultati
 # numerici delle panoramiche Street View fissati in beamng/dati), con due correzioni dopo le prime prove nel gioco:
-# - Magliaso, Strada Cantonale all'incrocio con Via Piscicoltura: la superficie della cantonale non scende più
-#   verso la strada più bassa al di là del muro (surface_fit.py: il muro tra le due strade era preso per un
+# - Magliaso, Strada Cantonale all'incrocio con Via Piscicoltura: la superficie della cantonale non scende piÃ¹
+#   verso la strada piÃ¹ bassa al di lÃ  del muro (surface_fit.py: il muro tra le due strade era preso per un
 #   dosso e le due strade per una superficie sola);
-# - boschi più leggeri da disegnare: tutti gli alberi misurati restano entro 30 m dalle strade e 5 m dai
-#   sentieri, più lontano sono diradati (vegetation.py), così i versanti con tornanti (il passo sopra Gravesano
-#   visto dal paese) non sono più fitti come il bosco intero.
+# - boschi piÃ¹ leggeri da disegnare: tutti gli alberi misurati restano entro 30 m dalle strade e 5 m dai
+#   sentieri, piÃ¹ lontano sono diradati (vegetation.py), cosÃ¬ i versanti con tornanti (il passo sopra Gravesano
+#   visto dal paese) non sono piÃ¹ fitti come il bosco intero.
 # Come per la v2.2: la release non contiene e non scarica immagini Street View; i controlli di check_level.py
 # devono passare, altrimenti la release non viene creata.
 # Si avvia a mano: Actions > Release v2.3 > Run workflow.
@@ -56,7 +56,7 @@ jobs:
       - name: Release v1.1 (oggetti del percorso originale, texture neutre)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -102,3 +102,4 @@ jobs:
         run: |
           gh release create v2.3 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.3.zip" --target "$GITHUB_SHA" \
             --title "Mappa BeamNG.drive Malcantone v2.3" --notes-file beamng/RELEASE_v2.3.md
+

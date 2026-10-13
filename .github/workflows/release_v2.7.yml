@@ -1,4 +1,4 @@
-# Release v2.7 of the BeamNG map (Malcantone): the published v2.6 zip passed through the four v2.7 patch scripts,
+﻿# Release v2.7 of the BeamNG map (Malcantone): the published v2.6 zip passed through the four v2.7 patch scripts,
 # in the order tested in the game on 5.10.2026 (beamng/verifica/screenshots/v2.7/test.json):
 # - patch_unpaved.py: dirt and gravel tracks flush with the ground (before the markings: the paint follows them);
 # - patch_markings.py: the road markings of the network redrawn as Swiss markings, none on gravel and dirt;
@@ -72,7 +72,7 @@ jobs:
         run: |
           D="$MAGLIASO_ROOT/dist"
           mkdir -p "$D"
-          gh release download v2.6 --pattern 'magliaso_pura_v2.6.zip' --dir "$D"
+          gh release download -R wintrymichi/magliasinaNG v2.6 --pattern 'magliaso_pura_v2.6.zip' --dir "$D"
           python patch_unpaved.py "$D/magliaso_pura_v2.6.zip" "$D/v26u.zip"
           rm "$D/magliaso_pura_v2.6.zip"
           python patch_markings.py "$D/v26u.zip" "$D/v26m.zip"
@@ -88,3 +88,4 @@ jobs:
         run: |
           gh release create v2.7 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.7.zip" --target "$GITHUB_SHA" \
             --title "BeamNG.drive map Malcantone v2.7" --notes-file beamng/RELEASE_v2.7.md
+

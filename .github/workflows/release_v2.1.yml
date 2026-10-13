@@ -1,11 +1,11 @@
-# Release v2.1 della mappa BeamNG (Malcantone): come la v2.0 il livello è costruito da zero su un server GitHub
-# con i dati aperti di swisstopo e della misurazione ufficiale, più:
+﻿# Release v2.1 della mappa BeamNG (Malcantone): come la v2.0 il livello Ã¨ costruito da zero su un server GitHub
+# con i dati aperti di swisstopo e della misurazione ufficiale, piÃ¹:
 # - la segnaletica orizzontale di tutta la rete rilevata nell'ortofoto SWISSIMAGE 10 cm del 2024
 #   (risultato in beamng/dati/network_markings.json.gz, rifatto con network_markings.py);
 # - sensi unici (OpenStreetMap), rotonde e carreggiate separate (swissTLM3D) per il traffico IA;
 # - cartelli STOP e precedenza, panchine, cestini e lampioni di OpenStreetMap;
 #   i dati OSM sono l'estratto fissato in beamng/dati/osm_area.json.gz (download_osm.py --pin per
-#   aggiornarlo), così la release non cambia con OSM e non dipende dai server Overpass;
+#   aggiornarlo), cosÃ¬ la release non cambia con OSM e non dipende dai server Overpass;
 # - i binari della FLP e delle FFS (swissTLM3D);
 # - la vegetazione fuori dalla sagoma libera delle strade, a terra e fuori da muri ed edifici (canopy.py).
 # I controlli di check_level.py devono passare, altrimenti la release non viene creata.
@@ -56,7 +56,7 @@ jobs:
       - name: Release v1.1 (oggetti del percorso originale, texture neutre)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -98,3 +98,4 @@ jobs:
         run: |
           gh release create v2.1 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.1.zip" --target "$GITHUB_SHA" \
             --title "Mappa BeamNG.drive Malcantone v2.1" --notes-file beamng/RELEASE_v2.1.md
+

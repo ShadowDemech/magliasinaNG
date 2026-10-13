@@ -1,4 +1,4 @@
-# Release v2.4 della mappa BeamNG (Malcantone): il livello costruito da zero su un server GitHub con gli stessi
+﻿# Release v2.4 della mappa BeamNG (Malcantone): il livello costruito da zero su un server GitHub con gli stessi
 # dati aperti (swisstopo, misurazione ufficiale, Registro degli edifici, OpenStreetMap e i risultati numerici
 # delle panoramiche Street View e dell'ortofoto fissati in beamng/dati), con le correzioni e la grafica della v2.4:
 # - case visibili da ogni lato: le pareti girate verso l'interno (gli edifici a L, a U, a corte, le file di case)
@@ -7,7 +7,7 @@
 #   che le panoramiche vedono come pavimentazione sono tolti o portati a filo (markings_state.py, walls.py);
 # - sterrati, ghiaia, cubetti e ciottoli secondo OpenStreetMap (osm_surface.py, surface_textures.py);
 # - erba e fiori, palme nei giardini sul lago, filari nei vigneti, acqua nei fiumi, ombre ambientali nei
-#   materiali, luce dei lampioni, foschia un po' più densa.
+#   materiali, luce dei lampioni, foschia un po' piÃ¹ densa.
 # Come per le versioni precedenti: la release non contiene e non scarica immagini Street View; i controlli di
 # check_level.py devono passare, altrimenti la release non viene creata.
 # Si avvia a mano: Actions > Release v2.4 > Run workflow.
@@ -57,7 +57,7 @@ jobs:
       - name: Release v1.1 (oggetti del percorso originale, texture neutre)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -103,3 +103,4 @@ jobs:
         run: |
           gh release create v2.4 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.4.zip" --target "$GITHUB_SHA" \
             --title "Mappa BeamNG.drive Malcantone v2.4" --notes-file beamng/RELEASE_v2.4.md
+

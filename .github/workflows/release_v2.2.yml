@@ -1,5 +1,5 @@
-# Release v2.2 della mappa BeamNG (Malcantone): come la v2.1 il livello è costruito da zero su un server GitHub
-# con i dati aperti di swisstopo, della misurazione ufficiale e di OpenStreetMap, più (v2.2):
+﻿# Release v2.2 della mappa BeamNG (Malcantone): come la v2.1 il livello Ã¨ costruito da zero su un server GitHub
+# con i dati aperti di swisstopo, della misurazione ufficiale e di OpenStreetMap, piÃ¹ (v2.2):
 # - le facciate degli edifici (finestre, persiane, porte, portoni, vetrine, zoccoli, comignoli) e le coperture
 #   dei tetti con texture originali disegnate dalla pipeline (bld_textures.py, facades.py), dagli attributi del
 #   Registro federale degli edifici (estratto fissato in beamng/dati/gwr_area.json.gz, download_gwr.py --pin);
@@ -60,7 +60,7 @@ jobs:
       - name: Release v1.1 (oggetti del percorso originale, texture neutre)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -106,3 +106,4 @@ jobs:
         run: |
           gh release create v2.2 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.2.zip" --target "$GITHUB_SHA" \
             --title "Mappa BeamNG.drive Malcantone v2.2" --notes-file beamng/RELEASE_v2.2.md
+

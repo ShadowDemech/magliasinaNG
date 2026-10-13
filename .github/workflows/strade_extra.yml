@@ -1,4 +1,4 @@
-# The roads added beyond the boundary drawn by michi (beamng/dati/strade_extra_v22.json, strade_extra.py), computed
+﻿# The roads added beyond the boundary drawn by michi (beamng/dati/strade_extra_v22.json, strade_extra.py), computed
 # again from swissTLM3D and swissNAMES3D, and the pinned extract of the building register
 # (beamng/dati/gwr_area.json.gz, download_gwr.py --pin) taken again over the area they widen. v2.8: the cantonal road
 # Arosio - Mugena - Vezio - Fescoggia - Breno - Miglieglia - Novaggio. Both files are committed to the branch the
@@ -69,3 +69,4 @@ jobs:
           if git diff --cached --quiet; then echo "nothing changed"; exit 0; fi
           git commit -m "Roads beyond the boundary: Arosio - Mugena - Breno - Miglieglia - Novaggio (strade_extra.py)"
           git push origin HEAD:${{ github.ref_name }}
+

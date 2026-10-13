@@ -1,4 +1,4 @@
-# Test of the v2.8 build before its release: the level built from scratch by build_level.py, as the release does
+﻿# Test of the v2.8 build before its release: the level built from scratch by build_level.py, as the release does
 # (release_v2.8.yml), with every step of v2.5 to v2.8 inside the build (build_level.FINISH: optimize, grass,
 # unpaved roads, markings, far trees, signs, paved edges, wall fill, understory, lamps, roadside, catenary, more
 # signs, lake, house details), then the automatic checks of the level (check_level.py, drive_test.py) and the
@@ -58,7 +58,7 @@ jobs:
       - name: Release v1.1 (objects of the original route, neutral textures)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -118,3 +118,4 @@ jobs:
           path: out/
           retention-days: 14
           compression-level: 0
+

@@ -1,4 +1,4 @@
-# Release v1.1 della mappa BeamNG: lo zip della release v1.0 corretto da
+﻿# Release v1.1 della mappa BeamNG: lo zip della release v1.0 corretto da
 # beamng/pipeline/patch_release.py (strade lisce, ponti, gradini ai muri, carreggiata senza alberi).
 # Si avvia a mano: Actions > Release v1.1 > Run workflow.
 name: Release v1.1
@@ -32,7 +32,7 @@ jobs:
       - name: Zip della v1.0
         run: |
           mkdir -p dist
-          gh release download v1.0 --pattern magliaso_pura_v1.0.zip --dir dist
+          gh release download -R wintrymichi/magliasinaNG v1.0 --pattern magliaso_pura_v1.0.zip --dir dist
           echo "45fc49d8d19c2731207286cbc0ba5fd16ba9e0cce0c1e1bdb9d6ef83a76f567a  dist/magliaso_pura_v1.0.zip" | sha256sum -c -
 
       - name: Correzione
@@ -60,25 +60,26 @@ jobs:
       - name: Release
         run: |
           cat > dist/notes.md <<'EOF'
-          Correzione della v1.0: la strada è liscia e sulla carreggiata non ci sono più alberi né ostacoli.
+          Correzione della v1.0: la strada Ã¨ liscia e sulla carreggiata non ci sono piÃ¹ alberi nÃ© ostacoli.
 
-          **Installazione:** copia `magliaso_pura_v1.1.zip` così com'è in `%LOCALAPPDATA%\BeamNG\BeamNG.drive\current\mods\` e togli `magliaso_pura_v1.0.zip`, che contiene lo stesso livello. In gioco scegli il livello **Strada Cantonale Magliaso - Pura (v1.1)**.
+          **Installazione:** copia `magliaso_pura_v1.1.zip` cosÃ¬ com'Ã¨ in `%LOCALAPPDATA%\BeamNG\BeamNG.drive\current\mods\` e togli `magliaso_pura_v1.0.zip`, che contiene lo stesso livello. In gioco scegli il livello **Strada Cantonale Magliaso - Pura (v1.1)**.
 
-          - **Strade lisce:** strade, marciapiedi e piazzali non ricalcano più il modello del terreno punto per punto. Pendenze e curve restano quelle reali, mentre il rumore del LiDAR, le gobbe e gli avvallamenti spariscono. Sulla cantonale la sezione della carreggiata è piana.
+          - **Strade lisce:** strade, marciapiedi e piazzali non ricalcano piÃ¹ il modello del terreno punto per punto. Pendenze e curve restano quelle reali, mentre il rumore del LiDAR, le gobbe e gli avvallamenti spariscono. Sulla cantonale la sezione della carreggiata Ã¨ piana.
           - **Ponte e tratto a sbalzo:** il modello del terreno non contiene i ponti. Per questo nella v1.0 la strada sul ponte del riale, a circa 3,05 km da Magliaso, scendeva di 7 m nel fosso, e il bordo a valle del tratto a circa 3,27 km cedeva di 3-4 m. Ora entrambi sono alla quota della strada, con i fianchi in pietra.
-          - **Muri tra superfici a quote diverse:** dove il modello del terreno aveva spalmato un muro in una rampa, ora c'è un gradino con una faccia in pietra. Il terreno non sporge più sopra l'asfalto.
+          - **Muri tra superfici a quote diverse:** dove il modello del terreno aveva spalmato un muro in una rampa, ora c'Ã¨ un gradino con una faccia in pietra. Il terreno non sporge piÃ¹ sopra l'asfalto.
           - **Carreggiata sgombra:** tolti 123 alberi con il tronco sulla strada o a meno di 0,5 m dal bordo. 225 arbusti e 108 siepi sono stati spostati indietro fino a 1,5 m, mentre 83 arbusti e 42 siepi che non ci stavano sono stati tolti.
           - **Il resto segue la strada:** segnaletica, rete dell'IA, lampioni, pali, cartelli, arredo e guardrail stanno sulla nuova superficie.
-          - **Controlli (v1.0 → v1.1):** punti del terreno più di 20 cm sopra l'asfalto 468 → 0; alberi e arbusti sulle superfici stradali 154 → 0; salto massimo tra due punti della linea dell'IA 5,15 m → 0,62 m.
+          - **Controlli (v1.0 â†’ v1.1):** punti del terreno piÃ¹ di 20 cm sopra l'asfalto 468 â†’ 0; alberi e arbusti sulle superfici stradali 154 â†’ 0; salto massimo tra due punti della linea dell'IA 5,15 m â†’ 0,62 m.
           - **Versione pubblica:** come la v1.0, non contiene immagini Google Street View.
 
-          **Come è fatta:** è lo zip della v1.0 corretto da `beamng/pipeline/patch_release.py` con il workflow `.github/workflows/release_v1.1.yml`. Muri e recinzioni sono quelli della v1.0. Le cifre di `beamng/verifica/VERIFICA.md` si riferiscono alla geometria della v1.0.
+          **Come Ã¨ fatta:** Ã¨ lo zip della v1.0 corretto da `beamng/pipeline/patch_release.py` con il workflow `.github/workflows/release_v1.1.yml`. Muri e recinzioni sono quelli della v1.0. Le cifre di `beamng/verifica/VERIFICA.md` si riferiscono alla geometria della v1.0.
 
           **Fonti:**
-          - © swisstopo (swissALTI3D, SWISSIMAGE, swissBUILDINGS3D, swissSURFACE3D);
+          - Â© swisstopo (swissALTI3D, SWISSIMAGE, swissBUILDINGS3D, swissSURFACE3D);
           - Ufficio del catasto e dei riordini fondiari, Cantone Ticino;
-          - © OpenStreetMap contributors (ODbL);
-          - Copernicus DEM GLO-30 (© DLR e.V. / Airbus, fornito nell'ambito di COPERNICUS da UE ed ESA).
+          - Â© OpenStreetMap contributors (ODbL);
+          - Copernicus DEM GLO-30 (Â© DLR e.V. / Airbus, fornito nell'ambito di COPERNICUS da UE ed ESA).
           EOF
           gh release create v1.1 dist/magliaso_pura_v1.1.zip --target "$GITHUB_SHA" \
-            --title "Mappa BeamNG.drive Magliaso – Pura v1.1" --notes-file dist/notes.md
+            --title "Mappa BeamNG.drive Magliaso â€“ Pura v1.1" --notes-file dist/notes.md
+

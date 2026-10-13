@@ -1,4 +1,4 @@
-# Updates the notes of a published release from its beamng/RELEASE_<tag>.md on main (for example after the
+﻿# Updates the notes of a published release from its beamng/RELEASE_<tag>.md on main (for example after the
 # screenshots of the test are added). Started by hand; the zip of the release is not touched.
 name: Release notes
 
@@ -23,3 +23,4 @@ jobs:
       - uses: actions/checkout@v4
       - name: Update the notes
         run: gh release edit "$TAG" --notes-file "beamng/RELEASE_$TAG.md"
+

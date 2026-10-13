@@ -1,4 +1,4 @@
-name: Website
+﻿name: Website
 
 # Publishes web/ (the project website) on GitHub Pages, at https://wintrymichi.ch (web/CNAME).
 # One-time setup in Settings -> Pages: Build and deployment -> Source: GitHub Actions; Custom domain:
@@ -39,3 +39,4 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+

@@ -1,4 +1,4 @@
-# Final build test of v2.8: the complete level built from scratch exactly as "v2.8 build test" does (build_level.py
+﻿# Final build test of v2.8: the complete level built from scratch exactly as "v2.8 build test" does (build_level.py
 # with every finishing step inside), after the terrain geometry fix, the removal of duplicate signs, guard rails and
 # walls, and the guard rails that showed only their posts. Then the automatic checks (check_level.py, drive_test.py),
 # the package and the count of what the level still has twice (doubles.py, doubles.json). The zip to test in the game, the reports, the check results and the build log are uploaded as the
@@ -61,7 +61,7 @@ jobs:
       - name: Release v1.1 (objects of the original route, neutral textures)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -127,3 +127,4 @@ jobs:
           path: out/
           retention-days: 30
           compression-level: 0
+

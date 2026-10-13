@@ -1,4 +1,4 @@
-# Release v2.8 from the zip tested in the game: the magliaso_pura_v2.8.zip of a "final build test" run (artifact
+﻿# Release v2.8 from the zip tested in the game: the magliaso_pura_v2.8.zip of a "final build test" run (artifact
 # final-build-test), published as it is instead of building it again, so the release is exactly the zip that was
 # tested in the game. Started by hand with the run id of that final build test.
 name: Release v2.8 (tested zip)
@@ -55,3 +55,4 @@ jobs:
         run: |
           gh release create v2.8 art/magliaso_pura_v2.8.zip --target "$GITHUB_SHA" \
             --title "BeamNG.drive map Malcantone v2.8" --notes-file beamng/RELEASE_v2.8.md
+

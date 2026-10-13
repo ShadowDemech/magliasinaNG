@@ -1,6 +1,6 @@
-# Release v2.0 della mappa BeamNG (Malcantone): il livello costruito da zero su un server GitHub
+﻿# Release v2.0 della mappa BeamNG (Malcantone): il livello costruito da zero su un server GitHub
 # con i dati aperti di swisstopo e della misurazione ufficiale (download, raster, rete stradale,
-# ponti, edifici, vegetazione), più gli oggetti del percorso originale presi dalla release v1.1.
+# ponti, edifici, vegetazione), piÃ¹ gli oggetti del percorso originale presi dalla release v1.1.
 # I controlli di check_level.py devono passare, altrimenti la release non viene creata.
 # Si avvia a mano: Actions > Release v2.0 > Run workflow.
 name: Release v2.0
@@ -49,7 +49,7 @@ jobs:
       - name: Release v1.1 (oggetti del percorso originale, texture neutre)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -91,3 +91,4 @@ jobs:
         run: |
           gh release create v2.0 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.0.zip" --target "$GITHUB_SHA" \
             --title "Mappa BeamNG.drive Malcantone v2.0" --notes-file beamng/RELEASE_v2.0.md
+

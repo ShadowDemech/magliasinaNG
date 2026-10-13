@@ -1,4 +1,4 @@
-# Release v2.8 of the BeamNG map (Malcantone): the level built from scratch by build_level.py with the same open data
+﻿# Release v2.8 of the BeamNG map (Malcantone): the level built from scratch by build_level.py with the same open data
 # as the earlier releases (swisstopo, the official survey, the building register, OpenStreetMap from the extract in
 # beamng/dati, the numbers of the panoramas and the orthophoto kept in beamng/dati), with every step of v2.5 to v2.8
 # inside the build (build_level.FINISH): optimize, grass, unpaved roads, markings, far trees, signs, paved edges,
@@ -73,7 +73,7 @@ jobs:
       - name: Release v1.1 (objects of the original route, neutral textures)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
 
       - name: Download
         working-directory: beamng/pipeline
@@ -136,3 +136,4 @@ jobs:
         run: |
           gh release create v2.8 "$MAGLIASO_ROOT/dist/magliaso_pura_v2.8.zip" --target "$GITHUB_SHA" \
             --title "BeamNG.drive map Malcantone v2.8" --notes-file beamng/RELEASE_v2.8.md
+
