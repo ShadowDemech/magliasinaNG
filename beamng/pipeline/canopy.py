@@ -405,7 +405,9 @@ class TileRasters:
         idx = solids.near(tx, ty)
         if len(idx):
             T = solids.tri[idx]
-            geoms = shapely.polygons(T[:, :, :2])
+            # Schliesst die Dreiecke ab (A, B, C -> A, B, C, A), um den GEOSException-Fehler in shapely zu verhindern
+            closed_rings = np.concatenate([T[:, :, :2], T[:, 0:1, :2]], axis=1)
+            geoms = shapely.polygons(closed_rings)
             inb = shapely.intersects(geoms, box)
             geoms, self.sol = geoms[inb], T[inb]
             self.sol_grp = solids.extra[idx][inb]
