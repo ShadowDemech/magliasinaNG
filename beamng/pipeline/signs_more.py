@@ -522,8 +522,11 @@ def signs_more_step(root, report=None):
                              "plates": [[a, b] for a, b in s.plates], "kind": s.kind, "osm": s.osm_id})
     with tempfile.TemporaryDirectory() as d:
         f = os.path.join(d, "props_signs_v28.dae")
-        mb.write_dae(f, name="props_signs_v28")
-        files[SHAPE] = open(f, "rb").read()
+        try:
+            mb.write_dae(f, name="props_signs_v28")
+            files[SHAPE] = open(f, "rb").read()
+        except ValueError:
+            pass
     files[MATERIALS] = json.dumps(mats, indent=1).encode("utf-8")
     group_file = f"{LEVEL}/main/MissionGroup/props/osm/items.level.json"
     obj = bng.tsstatic(f"/{SHAPE}", (0, 0, 0), collision=True)
