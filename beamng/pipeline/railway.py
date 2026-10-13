@@ -619,8 +619,18 @@ def catenary_step(root, report=None):
                 parts.append(tube(cw[j], mw[j], WIRE_R * 0.6, 4))
             wires.append((key, "mp_catenary_wire", np.concatenate(parts)))
     spans = np.array(spans)
+    # Wenn keine Spans vorhanden sind, setzen wir Dummy-Werte, um Abstuerze zu verhindern
+    if len(spans) == 0:
+        spans_median = 0.0
+        spans_max = 0
+        spans_over_max = 0
+    else:
+        spans_median = float(np.median(spans))
+        spans_max = int(spans.max())
+        spans_over_max = int((spans > MAX_SPAN).sum())
+
     print("masts: %d over %.1f km of track; spans median %.0f m, %d over %.0f m without wires; places skipped: %s"
-          % (n_masts, km, np.median(spans), int((spans > MAX_SPAN).sum()), MAX_SPAN, why), flush=True)
+        % (n_masts, km, spans_median, spans_over_max, MAX_SPAN, why), flush=True)
 
     new_files, items = {}, []
 
@@ -673,11 +683,10 @@ def catenary_step(root, report=None):
     print("written in %.0f s: %d mast tiles, %d wire tiles" % (time.time() - t0, nt_m, nt_w), flush=True)
     if report:
         res = {"sleepers": int(len(C)), "electrified_km": round(km, 2),
-               "chains": chain_rep,
-               "masts": n_masts, "skipped_places": skipped, "skipped_why": why,
-               "span_m": {"median": float(np.median(spans)), "max": int(spans.max()),
-                          "over_max_without_wires": int((spans > MAX_SPAN).sum())},
-               "mast_tiles": nt_m, "wire_tiles": nt_w}
-        os.makedirs(os.path.dirname(os.path.abspath(report)), exist_ok=True)
+           "chains": chain_rep,
+           "masts": n_masts, "skipped_places": skipped, "skipped_why": why,
+           "span_m": {"median": spans_median, "max": spans_max,
+                      "over_max_without_wires": spans_over_max},
+           "mast_tiles": nt_m, "wire_tiles": nt_w}
         json.dump(res, open(report, "w"), indent=1)
     return 0
