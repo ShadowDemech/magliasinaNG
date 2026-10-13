@@ -292,7 +292,12 @@ def lamps_step(root, village_lights=True, report=None):
     ROOF = road_mesh.TriSurface(np.concatenate(list(faces(zi, lv, ["buildings"]).values())))
     WALL = road_mesh.TriSurface(np.concatenate(list(faces(zi, lv, ["walls"], keep=lambda sn: "backfill" not in sn).values())))
     RAIL = road_mesh.TriSurface(np.concatenate(list(faces(zi, lv, ["railway"]).values()) or [np.zeros((0, 3, 3))]))
-    obst = cKDTree(obstacle_points(zi, lv))
+
+    # Sicherstellen, dass keine NaN oder Inf-Werte in den cKDTree gelangen
+    pts = obstacle_points(zi, lv)
+    valid_pts = pts[np.isfinite(pts).all(axis=1)]
+    obst = cKDTree(valid_pts)
+
     print("faces: %d carriageway, %d other road, %d roofs, %d wall tops; %d obstacle points"
           % (len(CARR.t), len(GROUND.t), len(ROOF.t), len(WALL.t), obst.n), flush=True)
 
