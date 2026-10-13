@@ -87,22 +87,8 @@ def polygon_v21():
 
 
 def _polygon(corridors=True):
-    """The boundary with its margin, the route, the cantonal road to Gravesano and (corridors) the roads of
-    v2.2."""
-    parts = [boundary().buffer(AREA_MARGIN, join_style="mitre"), route().buffer(ROUTE_MARGIN)]
-    p1, p2 = np.asarray(boundary().exterior.coords)[:2]
-    for road in extra_roads():
-        # the strip between the road and the side P1-P2 (the road runs from its south end, near
-        # P1, to its north end, near P2), and the road with its margin
-        parts.append(shapely.Polygon(list(road.coords) + [tuple(p2), tuple(p1)]).buffer(0))
-        parts.append(road.buffer(EXTRA_ROAD_MARGIN))
-    for _, _, road in (extra_corridors() if corridors else []):
-        parts.append(road.buffer(EXTRA_CORRIDOR))
-    A = shapely.union_all(parts)
-    # v2.2: a pocket that a corridor closes against the rest of the area (between the cantonal road of
-    # Caslano and the boundary) is part of it
-    if A.geom_type == "Polygon" and len(A.interiors):
-        A = shapely.Polygon(A.exterior)
+    """Only the boundary drawn by the user (Zunzgen)."""
+    A = boundary().buffer(AREA_MARGIN, join_style="mitre")
     return A
 
 
