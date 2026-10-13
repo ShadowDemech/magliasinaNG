@@ -403,19 +403,28 @@ class TileRasters:
         self.sol = np.zeros((0, 3, 3))
         self.sol_grp = np.zeros(0, np.int8)
         idx = solids.near(tx, ty)
-        if len(idx):
-            T = solids.tri[idx]
-            # Schliesst die Dreiecke ab (A, B, C -> A, B, C, A), um den GEOSException-Fehler in shapely zu verhindern
-            closed_rings = np.concatenate([T[:, :, :2], T[:, 0:1, :2]], axis=1)
-            geoms = shapely.polygons(closed_rings)
-            inb = shapely.intersects(geoms, box)
-            geoms, self.sol = geoms[inb], T[inb]
-            self.sol_grp = solids.extra[idx][inb]
+    if len(idx):
+        T = solids.tri[idx]
+        v_g, v_t, v_grp = [], [], []
+        for i in range(len(T)):
+            try:
+                pts = T[i, :, :2]
+                if not np.isnan(pts).any():
+                    poly = shapely.Polygon([pts[0], pts[1], pts[2], pts[0]])
+                    if poly.intersects(box):
+                        v_g.append(poly)
+                        v_t.append(T[i])
+                        v_grp.append(solids.extra[idx][i])
+            except Exception:
+                pass
+        if v_g:
+            geoms = np.array(v_g)
+            self.sol = np.array(v_t)
+            self.sol_grp = np.array(v_grp)
             area = shapely.area(geoms)
             shp = [(g, 1) for g in geoms[area > 1e-4]] + [(g, 1) for g in shapely.get_exterior_ring(geoms)]
             if shp:
-                self.solid = features.rasterize(shp, out_shape=(n, n), transform=tr, fill=0, dtype=np.uint8,
-                                                all_touched=True).astype(bool)
+                self.solid = features.rasterize(shp, out_shape=(n, n), transform=tr, fill=0, dtype=np.uint8, all_touched=True).astype(bool)
         self.sol_lo, self.sol_hi = self.sol[:, :, :2].min(1), self.sol[:, :, :2].max(1)
         self.sol_z0, self.sol_z1 = self.sol[:, :, 2].min(1), self.sol[:, :, 2].max(1)
         self.props = np.zeros((0, 2))
