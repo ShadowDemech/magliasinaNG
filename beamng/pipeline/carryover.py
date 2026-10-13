@@ -15,7 +15,7 @@ import patch_release as pr
 import road_mesh
 from config import LEVEL_NAME, REFERENCE_ZIP
 
-LEVEL = f"levels/{LEVEL_NAME}"
+LEVEL = "levels/magliaso_pura"
 FILES = ("art/road/", "art/shapes/roads/markings.dae", "art/shapes/props/", "art/shapes/signs/")
 GROUPS = ("main/MissionGroup/roads/markings/", "main/MissionGroup/props/")
 NEEDED = ("theTerrain.ter", "main/MissionGroup/level_objects/terrain/", "main/MissionGroup/roads/surfaces/",
