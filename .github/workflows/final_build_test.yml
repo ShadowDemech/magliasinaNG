@@ -61,7 +61,7 @@ jobs:
       - name: Release v1.1 (objects of the original route, neutral textures)
         run: |
           mkdir -p "$MAGLIASO_ROOT/dist"
-          gh release download -R wintrymichi/magliasinaNG v1.1 --pattern magliaso_pura_v1.1.zip --dir "$MAGLIASO_ROOT/dist"
+          wget -qO "$MAGLIASO_ROOT/dist/magliaso_pura_v1.1.zip" https://github.com/wintrymichi/magliasinaNG/releases/download/v1.1/magliaso_pura_v1.1.zip
 
       - name: Download
         working-directory: beamng/pipeline
