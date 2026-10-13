@@ -130,6 +130,14 @@ def standard(d, roads, carriage_tops):
     import markings_std
     import osm
     ways = osm.load()[0] if osm.available() else None
+    
+    # HACK: Force center lines on all roads by faking the 'highway' tag
+    if ways:
+        for w in ways:
+            if "highway" in w.get("tags", {}):
+                w["tags"]["highway"] = "primary" # Force it to be a primary road
+                w["tags"]["lanes"] = "2"         # Force 2 lanes
+                
     out = markings_std.standard(d, markings_std.Roads(roads),
                                 markings_clean.Carriage(carriage_tops) if len(carriage_tops) else None, ways, osm.DRIVE)
     print("network paint laid from the standard pieces:", out["standard"])
