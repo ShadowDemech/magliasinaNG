@@ -11,7 +11,7 @@ import io, json, os, re, zipfile
 import numpy as np
 from config import BEAMNG_GAME, REFERENCE_ZIP, LEVEL_NAME
 
-LEVEL = f"levels/{LEVEL_NAME}"
+LEVEL = "levels/magliaso_pura"
 
 
 def have_game():
