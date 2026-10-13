@@ -35,12 +35,51 @@ def to_local(geom):
 
 def load_av():
     out = {"LCSF": {}, "SOSF": {}, "SOLI": {}, "SOPT": {}}
+    
+    # Uebersetzung Deutsch -> Italienisch fuer die Zunzgen-Daten
+    de_to_it = {
+        "Gebaeude": "edificio",
+        "Strasse_Weg": "strada_sentiero",
+        "Trottoir": "marciapiede",
+        "Verkehrsinsel": "spartitraffico",
+        "Bahn": "ferrovia",
+        "Wasserbecken": "bacino_idrico",
+        "uebrige_befestigte": "altro_rivestimento_duro",
+        "Acker_Wiese_Weide": "campo_prato_pascolo",
+        "Reben": "vigna",
+        "Gartenanlage": "giardino",
+        "geschlossener_Wald": "bosco_fitto",
+        "uebrige_bestockte": "altro_bosco",
+        "fliessendes": "corso_acqua",
+        "stehendes": "specchio_acqua",
+        "Schilfbestand": "canneti",
+        "Geroell_Sand": "pietraia_sabbia",
+        "Abbau_Deponie": "cava_di_ghiaia_discarica",
+        "wasserloser_Fels": "roccia"
+    }
+    
     for layer in out:
         for f in json.load(open(os.path.join(DATA, "av", f"{layer}.geojson")))["features"]:
             g = to_local(shape(f["geometry"]))
             if not g.is_valid:
                 g = shapely.make_valid(g)
-            out[layer].setdefault(f["properties"]["Genere"], []).append((g, f["properties"]))
+            
+            props = f["properties"]
+            # Basel-Landschaft nutzt "Art" statt "Genere"
+            raw_art = props.get("Genere") or props.get("Art") or props.get("art") or "altro"
+            
+            # Uebersetze in den Tessiner Begriff
+            genere = "altro"
+            for de_word, it_word in de_to_it.items():
+                if de_word in raw_art:
+                    genere = it_word
+                    break
+            
+            # Unbekannte Begriffe behalten, damit das Skript sie loggen kann
+            if genere == "altro" and raw_art != "altro":
+                genere = raw_art
+                
+            out[layer].setdefault(genere, []).append((g, props))
     return out
 
 
