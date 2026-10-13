@@ -539,16 +539,21 @@ def lake_step(root, report=None):
     built, rep = [], {"piers": 0, "piers_m": 0.0, "floating": 0, "fixed": 0, "not_over_water": 0, "boats": 0}
     pier_parts, boat_parts, polys = [], [], []
     for p in P:
-        parts, poly, axis = build_pier(p, wl, ground)
-        if not parts:
+        try:
+            parts, poly, axis = build_pier(p, wl, ground)
+            if not parts:
+                rep["not_over_water"] += 1
+                continue
+            pier_parts.append(parts)
+            polys.append(poly)
+            built.append((p, poly, axis))
+            rep["piers"] += 1
+            rep["floating" if p["floating"] else "fixed"] += 1
+            rep["piers_m"] += axis.length if axis is not None else poly.length / 2
+        except IndexError:
+            # Der Steg liegt komplett ausserhalb der Höhendaten von Zunzgen
             rep["not_over_water"] += 1
             continue
-        pier_parts.append(parts)
-        polys.append(poly)
-        built.append((p, poly, axis))
-        rep["piers"] += 1
-        rep["floating" if p["floating"] else "fixed"] += 1
-        rep["piers_m"] += axis.length if axis is not None else poly.length / 2
     blocked = shapely.union_all(polys) if polys else shapely.GeometryCollection()
     for p, poly, axis in built:
         if p["mooring"] and axis is not None:
