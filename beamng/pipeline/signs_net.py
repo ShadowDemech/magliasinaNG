@@ -505,7 +505,7 @@ if __name__ == "__main__":
 # A finishing step of build_level.py (FINISH), on the built level; alone: python build_level.py --finish signs
 # --------------------------------------------------------------------------------------------------
 
-LEVEL = "levels/magliaso_pura"
+LEVEL = "levels/zunzgen"
 L = "/" + LEVEL
 SIGN_DIR = f"{LEVEL}/art/shapes/signs/ch"
 SHAPE = f"{LEVEL}/art/shapes/props/props_signs.dae"
