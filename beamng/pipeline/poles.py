@@ -325,7 +325,10 @@ def roadside_step(root, report=None):
     ROOF = road_mesh.TriSurface(np.concatenate(list(pl.faces(zi, lv, ["buildings"]).values())))
     WALL = road_mesh.TriSurface(np.concatenate(list(pl.faces(zi, lv, ["walls"], keep=lambda sn: "backfill" not in sn).values())))
     RAIL = road_mesh.TriSurface(np.concatenate(list(pl.faces(zi, lv, ["railway"]).values()) or [np.zeros((0, 3, 3))]))
-    obst = cKDTree(pl.obstacle_points(zi, lv))
+    # Sicherstellen, dass keine NaN oder Inf-Werte in den cKDTree gelangen
+    pts = pl.obstacle_points(zi, lv)
+    valid_pts = pts[np.isfinite(pts).all(axis=1)]
+    obst = cKDTree(valid_pts)
     # the street lamps (lamps.lamps_step runs before): no cable through one
     lamp_xy = np.array([o["position"][:2] for f in zi.namelist() if f.endswith("street_lights/items.level.json")
                         for o in pl.read_items(zi, f) if o.get("class") == "TSStatic"], np.float64).reshape(-1, 2)
