@@ -314,7 +314,11 @@ def _run(entries, put, workers=None):
     with Pool(workers or max(1, os.cpu_count() - 2)) as pool:
         k = 0
         for b in range(0, len(jobs), 64):             # in batches: the input is gigabytes of text
-            batch = [(n, [(entries[m](), off) for m, off in members]) for n, members in jobs[b:b + 64]]
+            batch = []
+            for n, members in jobs[b:b + 64]:
+                valid_members = [(entries[m](), off) for m, off in members if m in entries]
+                if valid_members:
+                    batch.append((n, valid_members))
             for n, out, st in pool.imap_unordered(_job, batch, chunksize=1):
                 put(n, out)
                 k += 1
