@@ -152,16 +152,23 @@ def _job(args):
 
 
 # ------------------------------------------------------------------ merging plan
-def plan_merge(items_files):
+def plan_merge(items_files, existing=None):
     """items_files: {zip name: text} of the MissionGroup items. Returns (new items texts,
     {new shape entry: [(old shape entry, offset)]}, set of old shape entries merged away)."""
     new_items, jobs, merged = {}, {}, set()
     for fname, text in items_files.items():
         group = fname.split("/MissionGroup/", 1)[1].rsplit("/items.level.json", 1)[0]
         lines = [l for l in text.splitlines() if l.strip()]
-        if group not in MERGE_GROUPS:
-            continue
         objs = [json.loads(l) for l in lines]
+        if existing is not None:
+            objs = [o for o in objs if not (
+                o.get("class") == "TSStatic" and o.get("shapeName", "").startswith("/levels/")
+                and o.get("shapeName", "").lower().endswith(".dae")
+                and o["shapeName"].lstrip("/") not in existing
+            )]
+        if group not in MERGE_GROUPS:
+            new_items[fname] = "\n".join(json.dumps(o, separators=(",", ":")) for o in objs) + "\n"
+            continue
         keep, buckets = [], {}
         for o in objs:
             sn = o.get("shapeName", "")
@@ -280,7 +287,7 @@ def main(src, dst, workers=None):
             os.makedirs(os.path.dirname(p), exist_ok=True)
             with open(p, "wb") as f:
                 f.write(data)
-    _run(entries, put, workers)
+    _run(entries, put, workers=None)
     if zout:
         zout.close()
 
@@ -289,7 +296,7 @@ def _run(entries, put, workers=None):
     t0 = time.time()
 
     items = {n: r().decode("utf-8") for n, r in entries.items() if "/MissionGroup/" in n and n.endswith("items.level.json")}
-    new_items, merge_jobs, merged = plan_merge(items)
+    new_items, merge_jobs, merged = plan_merge(items, existing=set(entries))
     for n, r in entries.items():
         if n.lower().endswith(".dae"):
             continue

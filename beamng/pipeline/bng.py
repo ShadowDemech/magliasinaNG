@@ -234,10 +234,10 @@ class MeshBuilder:
     def __init__(self):
         self.parts = {}   # material -> [verts(list of arrays), normals, uvs, count]
 
-    def add(self, material, verts, uvs=None, normals=None, tris=None, colors=None):
+   def add(self, material, verts, uvs=None, normals=None, tris=None, colors=None):
         """verts (n,3); tris (m,3) indices into verts (default: consecutive triangles);
         colors (n,4) or (4,) RGBA 0..1 vertex colours (optional, used with vertColor materials)."""
-        verts = np.asarray(verts, np.float64)
+        verts = np.nan_to_num(np.asarray(verts, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
         if len(verts) == 0:
             return
         if tris is None:
@@ -246,7 +246,7 @@ class MeshBuilder:
         if len(tris) == 0:
             return
         if uvs is None:
-            uvs = np.nan_to_num(verts[:, :2], nan=0.0, posinf=0.0, neginf=0.0) / 4.0
+            uvs = verts[:, :2] / 4.0
         uvs = np.nan_to_num(np.asarray(uvs, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
         if normals is None:
             normals = vertex_normals(verts, tris)
@@ -255,12 +255,6 @@ class MeshBuilder:
             colors = np.ones((len(verts), 4))
         colors = np.nan_to_num(np.broadcast_to(np.asarray(colors, np.float64), (len(verts), 4)),
                                nan=1.0, posinf=1.0, neginf=0.0)
-        valid_tri = np.isfinite(verts[tris]).all(axis=(1, 2))
-        if not valid_tri.all():
-            tris = tris[valid_tri]
-            if len(tris) == 0:
-                return
-            verts = np.nan_to_num(verts, nan=0.0, posinf=0.0, neginf=0.0)
         p = self.parts.setdefault(material, [[], [], [], [], 0, []])
         p[0].append(verts); p[1].append(normals); p[2].append(uvs)
         p[3].append(tris + p[4]); p[4] += len(verts); p[5].append(colors)
