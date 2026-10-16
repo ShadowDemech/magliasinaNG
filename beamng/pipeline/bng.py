@@ -383,6 +383,7 @@ class MeshBuilder:
         if orient:
             self.orient_closed()
         if weld:
+            first_mat = next(iter(self.parts), None)
             for mat, p in list(self.parts.items()):
                 V2, N2, U2, T2, C2 = weld_corners(np.concatenate(p[0]), np.concatenate(p[1]),
                                                   np.concatenate(p[2]), np.concatenate(p[3]), np.concatenate(p[5]))
@@ -390,6 +391,16 @@ class MeshBuilder:
                     del self.parts[mat]
                 else:
                     self.parts[mat] = [[V2], [N2], [U2], [T2], len(V2), [C2]]
+            if not self.parts and first_mat is not None:
+                # Fallback: schreibe ein winziges, unsichtbares Dreieck am Ursprung,
+                # damit die .dae-Datei physisch existiert und Parser nicht mit KeyError abstürzen
+                o_v = np.asarray(origin, np.float64)
+                V_dummy = np.array([[0.0, 0.0, -500.0], [0.001, 0.0, -500.0], [0.0, 0.001, -500.0]]) + o_v
+                N_dummy = np.array([[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0]])
+                U_dummy = np.zeros((3, 2))
+                T_dummy = np.array([[0, 1, 2]], np.int64)
+                C_dummy = np.ones((3, 4))
+                self.parts[first_mat] = [[V_dummy], [N_dummy], [U_dummy], [T_dummy], 3, [C_dummy]]
         if not self.parts:
             return
         o = np.asarray(origin, np.float64)
