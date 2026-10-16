@@ -18,8 +18,15 @@ def pid():
 def write_ter(path, heights, z0, max_height, layers, materials):
     """heights: (n, n) float metres, row 0 = SOUTH (y = terrain position y), col 0 = west.
     layers : (n, n) uint8 material index per vertex (same orientation)."""
+    heights = np.asarray(heights, np.float64)
     n = heights.shape[0]
     assert heights.shape == (n, n) and layers.shape == (n, n)
+    if not np.isfinite(z0):
+        z0 = float(np.nanmin(heights)) if np.isfinite(heights).any() else 0.0
+    if not np.isfinite(max_height) or max_height <= 0:
+        max_height = float(np.nanmax(heights) - z0) if np.isfinite(heights).any() else 1.0
+    max_height = max(float(max_height), 1e-3)
+    heights = np.nan_to_num(heights, nan=z0, posinf=z0 + max_height, neginf=z0)
     q = np.clip(np.round((heights - z0) / max_height * 65535.0), 0, 65535).astype("<u2")
     with open(path, "wb") as f:
         f.write(struct.pack("<B", 9))
@@ -184,7 +191,21 @@ def weld_corners(V, N, UV, T, C=None, step=NORMAL_STEP):
     change, a crease keeps its two vertices. The meshes were written as triangle soups (three own
     vertices per triangle), twice the vertices the game has to store, draw and collide with.
     Returns (V, N, UV, T, C)."""
+    V = np.asarray(V, np.float64)
+    N = np.asarray(N, np.float64)
+    UV = np.asarray(UV, np.float64)
     T = np.asarray(T, np.int64)
+    if len(T) == 0 or len(V) == 0:
+        return V[:0], N[:0], UV[:0], T[:0], (C[:0] if C is not None else None)
+    valid_v = np.isfinite(V).all(axis=1)
+    if not valid_v.all():
+        T = T[valid_v[T].all(axis=1)]
+        if len(T) == 0:
+            return V[:0], N[:0], UV[:0], T[:0], (C[:0] if C is not None else None)
+    UV = np.nan_to_num(UV, nan=0.0, posinf=0.0, neginf=0.0)
+    N = np.nan_to_num(N, nan=0.0, posinf=0.0, neginf=0.0)
+    if C is not None:
+        C = np.nan_to_num(np.asarray(C, np.float64), nan=1.0, posinf=1.0, neginf=0.0)
     used, inv_used = np.unique(T, return_inverse=True)
     cols = [np.round(V[used] * 1000), np.round(UV[used] * 1e4), np.round(N[used] / step)]
     if C is not None:
@@ -217,21 +238,31 @@ class MeshBuilder:
         """verts (n,3); tris (m,3) indices into verts (default: consecutive triangles);
         colors (n,4) or (4,) RGBA 0..1 vertex colours (optional, used with vertColor materials)."""
         verts = np.asarray(verts, np.float64)
+        if len(verts) == 0:
+            return
         if tris is None:
             tris = np.arange(len(verts)).reshape(-1, 3)
         tris = np.asarray(tris, np.int64)
         if len(tris) == 0:
             return
         if uvs is None:
-            uvs = verts[:, :2] / 4.0
-        uvs = np.asarray(uvs, np.float64)
+            uvs = np.nan_to_num(verts[:, :2], nan=0.0, posinf=0.0, neginf=0.0) / 4.0
+        uvs = np.nan_to_num(np.asarray(uvs, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
         if normals is None:
             normals = vertex_normals(verts, tris)
+        normals = np.nan_to_num(np.asarray(normals, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
         if colors is None:
             colors = np.ones((len(verts), 4))
-        colors = np.broadcast_to(np.asarray(colors, np.float64), (len(verts), 4))
+        colors = np.nan_to_num(np.broadcast_to(np.asarray(colors, np.float64), (len(verts), 4)),
+                               nan=1.0, posinf=1.0, neginf=0.0)
+        valid_tri = np.isfinite(verts[tris]).all(axis=(1, 2))
+        if not valid_tri.all():
+            tris = tris[valid_tri]
+            if len(tris) == 0:
+                return
+            verts = np.nan_to_num(verts, nan=0.0, posinf=0.0, neginf=0.0)
         p = self.parts.setdefault(material, [[], [], [], [], 0, []])
-        p[0].append(verts); p[1].append(np.asarray(normals, np.float64)); p[2].append(uvs)
+        p[0].append(verts); p[1].append(normals); p[2].append(uvs)
         p[3].append(tris + p[4]); p[4] += len(verts); p[5].append(colors)
 
     def empty(self):
@@ -249,14 +280,18 @@ class MeshBuilder:
         the number of triangles turned."""
         tri_part, tri_idx, corners = [], [], []
         for mat, p in self.parts.items():
+            if not p[0] or not p[3]:
+                continue
             V = np.concatenate(p[0])
             T = np.concatenate(p[3])
+            if len(T) == 0:
+                continue
             tri_part += [mat] * len(T)
             tri_idx.append(np.arange(len(T)))
             corners.append(V[T])
         if not corners:
             return 0
-        C = np.concatenate(corners)                              # (k, 3, 3)
+        C = np.nan_to_num(np.concatenate(corners), nan=0.0, posinf=0.0, neginf=0.0)   # (k, 3, 3)
         tri_idx = np.concatenate(tri_idx)
         tri_part = np.array(tri_part)
         key = np.round(C.reshape(-1, 3) * 1000).astype(np.int64)
@@ -321,8 +356,12 @@ class MeshBuilder:
         # write the turns back: reversed corners and opposite normals of the turned triangles
         base = 0
         for mat, p in self.parts.items():
+            if not p[0] or not p[3]:
+                continue
             T = np.concatenate(p[3])
             n_t = len(T)
+            if n_t == 0:
+                continue
             f = flip[base:base + n_t]
             base += n_t
             if not f.any():
@@ -350,10 +389,15 @@ class MeshBuilder:
         if orient:
             self.orient_closed()
         if weld:
-            for mat, p in self.parts.items():
+            for mat, p in list(self.parts.items()):
                 V2, N2, U2, T2, C2 = weld_corners(np.concatenate(p[0]), np.concatenate(p[1]),
                                                   np.concatenate(p[2]), np.concatenate(p[3]), np.concatenate(p[5]))
-                self.parts[mat] = [[V2], [N2], [U2], [T2], len(V2), [C2]]
+                if len(T2) == 0:
+                    del self.parts[mat]
+                else:
+                    self.parts[mat] = [[V2], [N2], [U2], [T2], len(V2), [C2]]
+        if not self.parts:
+            return
         o = np.asarray(origin, np.float64)
         Vs, Ns, Ts, Cs, prims, mats, effects, binds = [], [], [], [], [], [], [], []
         off = 0
@@ -428,7 +472,7 @@ class MeshBuilder:
 
 
 def vertex_normals(V, T):
-    V = np.asarray(V, np.float64)
+    V = np.nan_to_num(np.asarray(V, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
     T = np.asarray(T, np.int64)
     fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
     N = np.zeros_like(V)
@@ -441,7 +485,7 @@ def vertex_normals(V, T):
 
 def flat_normals_soup(V):
     """For triangle soups (every 3 consecutive vertices a face): per-face normals."""
-    V = np.asarray(V, np.float64).reshape(-1, 3, 3)
+    V = np.nan_to_num(np.asarray(V, np.float64), nan=0.0, posinf=0.0, neginf=0.0).reshape(-1, 3, 3)
     fn = np.cross(V[:, 1] - V[:, 0], V[:, 2] - V[:, 0])
     n = np.linalg.norm(fn, axis=1, keepdims=True)
     n[n == 0] = 1
@@ -453,7 +497,7 @@ def box_uvs_soup(V, tile):
     per repeat: (x, y) on faces that look up or down, (y, z) or (x, z) on the others. The (x + y, z) of
     the walls gives a face lying flat (the underside of a bridge deck, a parapet top) or one running
     along x = -y a single texture row stretched into stripes."""
-    V = np.asarray(V, np.float64).reshape(-1, 3, 3)
+    V = np.nan_to_num(np.asarray(V, np.float64), nan=0.0, posinf=0.0, neginf=0.0).reshape(-1, 3, 3)
     fn = np.abs(np.cross(V[:, 1] - V[:, 0], V[:, 2] - V[:, 0]))
     ax = np.argmax(fn, axis=1)                   # 0: faces x, 1: faces y, 2: faces z
     u = np.where(ax == 0, V[:, :, 1].T, V[:, :, 0].T).T

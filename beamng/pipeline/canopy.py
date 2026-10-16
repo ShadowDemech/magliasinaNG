@@ -269,8 +269,10 @@ def water_blocks(lv):
 def terrain_low(ter, x, y):
     """Height of the terrain surface: the lower of the two ways a terrain square can be split into
     triangles (an item set on it does not float whichever way the engine splits it)."""
-    c = (np.asarray(x) - ter.x0) / ter.sq
-    r = (np.asarray(y) - ter.y0) / ter.sq
+    x = np.atleast_1d(np.asarray(x, float))
+    y = np.atleast_1d(np.asarray(y, float))
+    c = (x - ter.x0) / ter.sq
+    r = (y - ter.y0) / ter.sq
     c0 = np.clip(np.floor(c).astype(np.int64), 0, ter.n - 2)
     r0 = np.clip(np.floor(r).astype(np.int64), 0, ter.n - 2)
     fc, fr = np.clip(c - c0, 0, 1), np.clip(r - r0, 0, 1)
@@ -278,7 +280,10 @@ def terrain_low(ter, x, y):
     a = np.where(fc >= fr, z00 + fc * (z10 - z00) + fr * (z11 - z10), z00 + fr * (z01 - z00) + fc * (z11 - z01))
     b = np.where(fc + fr <= 1, z00 + fc * (z10 - z00) + fr * (z01 - z00),
                  z11 + (1 - fc) * (z01 - z11) + (1 - fr) * (z10 - z11))
-    return np.minimum(a, b)
+    res = np.minimum(a, b)
+    if not np.isfinite(res).all():
+        res = np.nan_to_num(res, nan=0.0, posinf=0.0, neginf=0.0)
+    return res
 
 
 class Ground:
@@ -345,6 +350,8 @@ def raster_max_heights(tri, x_min, y_max, shape, res=RES):
         ins = (l0 >= -1e-9) & (l1 >= -1e-9) & (l2 >= -1e-9) & ok[:, None]
         z = l0 * a[:, 2:3] + l1 * b[:, 2:3] + l2 * c[:, 2:3]
         rr, cc, z = rr[ins], cc[ins], z[ins]
+        if len(rr) == 0:
+            continue
         order = np.argsort(z)                               # the highest face written last wins
         out[rr[order], cc[order]] = np.fmax(out[rr[order], cc[order]], z[order])
     return out
@@ -406,7 +413,6 @@ class TileRasters:
         if len(idx):
             T = solids.tri[idx]
             
-            # 1. Filtere kaputte/entartete Dreiecke (NaNs oder Flaeche = 0) rigoros aus
             v0 = T[:, 1, :2] - T[:, 0, :2]
             v1 = T[:, 2, :2] - T[:, 0, :2]
             area_2d = np.abs(v0[:, 0] * v1[:, 1] - v1[:, 0] * v0[:, 1])
@@ -416,7 +422,6 @@ class TileRasters:
             idx = idx[valid]
             
             if len(T):
-                # 2. Ringe schliessen, wie shapely es verlangt (A, B, C, A)
                 closed_rings = np.concatenate([T[:, :, :2], T[:, 0:1, :2]], axis=1)
                 geoms = shapely.polygons(closed_rings)
                 
@@ -427,8 +432,12 @@ class TileRasters:
                 shp = [(g, 1) for g in geoms[area > 1e-4]] + [(g, 1) for g in shapely.get_exterior_ring(geoms)]
                 if shp:
                     self.solid = features.rasterize(shp, out_shape=(n, n), transform=tr, fill=0, dtype=np.uint8, all_touched=True).astype(bool)
-        self.sol_lo, self.sol_hi = self.sol[:, :, :2].min(1), self.sol[:, :, :2].max(1)
-        self.sol_z0, self.sol_z1 = self.sol[:, :, 2].min(1), self.sol[:, :, 2].max(1)
+        if len(self.sol) > 0:
+            self.sol_lo, self.sol_hi = self.sol[:, :, :2].min(1), self.sol[:, :, :2].max(1)
+            self.sol_z0, self.sol_z1 = self.sol[:, :, 2].min(1), self.sol[:, :, 2].max(1)
+        else:
+            self.sol_lo = self.sol_hi = np.zeros((0, 2))
+            self.sol_z0 = self.sol_z1 = np.zeros(0)
         self.props = np.zeros((0, 2))
         if len(props):
             m = (props[:, 0] > self.x_min - 2) & (props[:, 0] < self.x_min + n * RES + 2) & \
@@ -440,7 +449,11 @@ class TileRasters:
         self.water = water
 
     def cell(self, x, y):
-        return int((x - self.x_min) / RES), int((self.y_max - y) / RES)
+        x = float(np.nan_to_num(x, nan=self.x_min))
+        y = float(np.nan_to_num(y, nan=self.y_max))
+        c = int((x - self.x_min) / RES)
+        r = int((self.y_max - y) / RES)
+        return max(0, min(c, self.n - 1)), max(0, min(r, self.n - 1))
 
     def window(self, x, y, rad):
         """Cells within rad of (x, y): (rows, cols, distances, cell x, cell y)."""
@@ -460,6 +473,8 @@ class TileRasters:
         """How far the crown of a plant at (x, y) with its base at zb reaches into the clearance
         profile of the drivable faces beyond EDGE_TOL (m, <= 0 when it does not), the class of the
         surface and the unit vector away from where it reaches in."""
+        if not np.isfinite(x) or not np.isfinite(y) or not np.isfinite(zb):
+            return -9.0, -1, 0.0, 0.0
         rr, cc, d, X, Y = self.window(x, y, r + RES)
         k = self.cls[rr, cc]
         on = k >= 0
@@ -485,6 +500,8 @@ class TileRasters:
         of SOLID_NAMES of the nearest solid face, or of a vanilla prop within PROP_R m; None."""
         if len(self.props) and (np.hypot(self.props[:, 0] - x, self.props[:, 1] - y) < PROP_R).any():
             return len(SOLID_NAMES) - 1
+        if len(self.sol) == 0:
+            return None
         m = (self.sol_lo[:, 0] <= x + rad) & (self.sol_hi[:, 0] >= x - rad) & (self.sol_lo[:, 1] <= y + rad) & \
             (self.sol_hi[:, 1] >= y - rad) & (self.sol_z1 >= z0) & (self.sol_z0 <= z1)
         if not m.any():
@@ -510,6 +527,8 @@ class TileRasters:
     def blocked(self, x, y, zb, top):
         """Why a trunk at (x, y), base zb, may not stand there: 'solid' (a wall, a building, a parapet,
         a guardrail, a fence or a street light within TRUNK_R / PROP_R m), else None."""
+        if not np.isfinite(x) or not np.isfinite(y) or not np.isfinite(zb):
+            return "solid"
         rr, cc, d, _, _ = self.window(x, y, TRUNK_R)
         if len(rr) and self.solid[rr, cc].any():
             g = self.solid_near(x, y, zb - 0.3, zb + min(top, 4.0), TRUNK_R)
@@ -520,6 +539,8 @@ class TileRasters:
     def near_surface(self, x, y, clear=TRUNK_CLEAR):
         """A drivable face on the trunk or within clear[class] - 0.05 m of it, on the faces themselves
         and in plan, as check_level.py measures it (12 points around the trunk)."""
+        if not np.isfinite(x) or not np.isfinite(y):
+            return True
         a = np.linspace(0, 2 * np.pi, 12, endpoint=False)
         for c, S in self.exact.items():
             rad = clear[c] - 0.05
@@ -530,6 +551,8 @@ class TileRasters:
     def trunk_free(self, x, y, zb, top, clear=TRUNK_CLEAR):
         """A place a trunk may be moved to: not blocked, clear of the drivable faces at its level
         (clear[class] m), and of all of them in plan (near_surface), and not in the lake."""
+        if not np.isfinite(x) or not np.isfinite(y) or not np.isfinite(zb):
+            return False
         rr, cc, d, _, _ = self.window(x, y, max(clear.max(), TRUNK_R))
         if not len(rr) or self.blocked(x, y, zb, top):
             return False
@@ -550,6 +573,8 @@ class TileRasters:
 def plant_intrusion(T, F, i, x, y, zb, kind, h, r):
     """TileRasters.intrusion for plant i at (x, y): a hedge is measured as three circles of its
     half width along its length."""
+    if not np.isfinite(x) or not np.isfinite(y) or not np.isfinite(zb):
+        return -9.0, -1, 0.0, 0.0
     if kind != "hedge":
         return T.intrusion(x, y, zb, kind, h, r)
     _, _, L0, W0 = F.sizes.get(F.types[F.t[i]], (1.7, 1.05, 1.5, 0.6))
@@ -604,6 +629,8 @@ def run(lv, verbose=True, record=None):
     is_tree = np.isin(kinds, ("broadleaf", "conifer"))
     sink = np.where(is_tree, SINK["tree"], np.array([SINK.get(k, 0.1) for k in kinds]))
     zb = ground.base(F.x, F.y, np.where(is_tree, TRUNK_R, 0.2))
+    zb = np.nan_to_num(zb, nan=0.0, posinf=0.0, neginf=0.0)
+    F.z = np.nan_to_num(F.z, nan=0.0, posinf=0.0, neginf=0.0)
     before = F.z - (zb - sink)
     stats["floating_before"] = int((before > FLOAT_TOL).sum())
     stats["buried_before"] = int((before < -BURY_TOL).sum())
@@ -611,7 +638,7 @@ def run(lv, verbose=True, record=None):
     H, R = F.sizes_all()
     changes = []
     tree_ids = np.flatnonzero(is_tree)
-    tree_kd = cKDTree(np.column_stack([F.x[tree_ids], F.y[tree_ids]]))
+    tree_kd = cKDTree(np.column_stack([F.x[tree_ids], F.y[tree_ids]])) if len(tree_ids) > 0 else None
     tx_all, ty_all = np.floor(F.x / TILE).astype(int), np.floor(F.y / TILE).astype(int)
     tiles = sorted(set(zip(tx_all.tolist(), ty_all.tolist())))
     for n_tile, (tx, ty) in enumerate(tiles):
@@ -621,6 +648,10 @@ def run(lv, verbose=True, record=None):
             continue
         T = TileRasters(tx, ty, roads, solids, props, water)
         for i in items:
+            if not np.isfinite(F.x[i]) or not np.isfinite(F.y[i]) or not np.isfinite(F.z[i]):
+                F.alive[i] = False
+                stats["removed"] += 1
+                continue
             kind = kinds[i]
             tree = kind in ("broadleaf", "conifer")
             h, r = H[i], R[i]
@@ -710,10 +741,13 @@ def _fix(F, T, ground, trees, moved_to, i, kind, ux, uy, limit, fam, sink, stats
                 vx, vy = c * ux - sn * uy, sn * ux + c * uy
                 x, y = x0 + d * vx, y0 + d * vy
                 zb = float(ground.base([x], [y], TRUNK_R if tree else 0.2)[0])
+                zb = float(np.nan_to_num(zb, nan=0.0, posinf=0.0, neginf=0.0))
+                if not np.isfinite(x) or not np.isfinite(y) or not np.isfinite(zb):
+                    continue
                 if d > 0:
                     if not T.trunk_free(x, y, zb, h, clear=TRUNK_CLEAR if tree else np.zeros(3)):
                         continue
-                    if tree:
+                    if tree and tree_kd is not None and len(tree_ids) > 0:
                         near = tree_ids[tree_kd.query_ball_point([x, y], TRUNK_GAP)]
                         if any(j != i and F.alive[j] for j in near):
                             continue
@@ -753,6 +787,7 @@ def check(lv, places=None):
     tree = np.isin(kinds, ("broadleaf", "conifer"))
     sink = np.where(tree, SINK["tree"], 0.1)
     off = F.z - ground.height(F.x, F.y)
+    off = np.nan_to_num(off, nan=0.0, posinf=0.0, neginf=0.0)
     res = {"forest_floating": int((off > FLOAT_TOL).sum()), "forest_buried": int((off < -BURY_TOL).sum()),
            "crowns_in_profile": 0, "crowns_in_profile_by_class": {c: 0 for c in CLASS_NAMES},
            "crowns_in_profile_max_m": 0.0, "trunks_in_solids": 0, "trunks_in_solids_by_kind": {}}

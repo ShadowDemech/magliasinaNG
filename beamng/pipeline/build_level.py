@@ -91,6 +91,12 @@ def stage_terrain(scene, ctx):
         no_cover = binary_dilation(override[1], iterations=1)
     z0, maxh, H = terrain.build_terrain(LEVEL_DIR, *(override or (None, None, None)), post_fn=post,
                                         cap=ctx.get("terrain_cap"), no_cover=no_cover)
+    if not np.isfinite(z0):
+        z0 = float(np.nanmin(H)) if np.isfinite(H).any() else 0.0
+    if not np.isfinite(maxh) or maxh <= 0:
+        maxh = float(np.nanmax(H) - z0) if np.isfinite(H).any() else 1.0
+    maxh = max(float(maxh), 1e-3)
+    H = np.nan_to_num(H, nan=z0, posinf=z0 + maxh, neginf=z0)
     mats = terrain.terrain_materials(LEVEL_NAME, base_tex)
     os.makedirs(level_path("art", "terrains"), exist_ok=True)
     json.dump(mats, open(level_path("art", "terrains", "main.materials.json"), "w"), indent=1)
@@ -100,7 +106,7 @@ def stage_terrain(scene, ctx):
         rivers.write(LEVEL_DIR, LEVEL_NAME, scene, ctx["river_meshes"], H, xs, ys)
     scene.add("MissionGroup/level_objects/terrain", {
         "name": "theTerrain", "class": "TerrainBlock", "persistentId": bng.pid(),
-        "position": [TER_X0, TER_Y0, z0], "maxHeight": maxh, "squareSize": TER_SQUARE,
+        "position": [TER_X0, TER_Y0, float(z0)], "maxHeight": float(maxh), "squareSize": TER_SQUARE,
         "baseTexSize": terrain.BASE_TEX, "materialTextureSet": f"{LEVEL_NAME}TerrainMaterialTextureSet",
         "terrainFile": f"{L}/theTerrain.ter"})
     ctx["z0"], ctx["H"] = z0, H
