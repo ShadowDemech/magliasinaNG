@@ -24,24 +24,29 @@ REFERENCE_ZIP = os.environ.get("MAGLIASO_REFERENCE_ZIP") or os.path.join(ROOT, "
 # personal one installed in the game)
 LEVEL_DIR = os.environ.get("MAGLIASO_LEVEL_DIR") or os.path.join(BEAMNG_USER, "levels", LEVEL_NAME)
 
-# map origin (LV95) = centre of the Street View route, rounded to the metre (Sissach)
-E0, N0 = 2628000.0, 1257000.0
-K = 1.0000096             # LV95 scale factor at the origin (approx. for Sissach)
-
-# playable area: 5x5 km boundary around Sissach
+# map origin (LV95) = centre of the Street View route, rounded to the metre
+E0, N0 = 2627500.0, 1255000.0
+K = 1.0001374973449562          # LV95 scale factor at the origin (pyproj get_factors)
+# playable area (v2.0, Malcantone): the boundary drawn by the user (WGS84 lat, lon), widened by
+# AREA_MARGIN m and joined with the Street View route (ROUTE_MARGIN m around it) and with the
+# cantonal road Magliaso - Agno - Bioggio - Manno - Gravesano (dati/cantonale_gravesano.json,
+# strade_extra.py: EXTRA_ROAD_MARGIN m around it and the strip between it and the side P1-P2 of the
+# boundary); v2.2: with a corridor of EXTRA_CORRIDOR m around the roads of dati/strade_extra_v22.json (the
+# pass above Gravesano to Arosio, the cantonal road Ponte Tresa - Caslano - Magliaso, Caslano - Torrazza;
+# v2.8: Arosio - Mugena - Breno - Miglieglia - Novaggio);
+# see area.py
 BOUNDARY = [(47.443, 7.778), (47.443, 7.844), (47.489, 7.844), (47.489, 7.778)]
 AREA_MARGIN = 150.0
 ROUTE_MARGIN = 60.0
 EXTRA_ROAD_MARGIN = 150.0
 EXTRA_CORRIDOR = 100.0
-
-# terrain block: 4096 x 1.5m = 6144m total size. 
-# Centered around origin: -3072m to +3072m
-TER_SIZE = 4096                 # terrain samples per side (muss eine 2er-Potenz sein)
+# terrain block: TER_SIZE x TER_SIZE vertices TER_SQUARE m apart, vertex (0, 0) (south-west) at
+# (TER_X0, TER_Y0); it covers the area with ~0.6-2 km to spare
+TER_SIZE = 8192                 # terrain samples per side
 TER_SQUARE = 1.5                # metres per terrain sample
-TER_X0, TER_Y0 = -3072.0, -3072.0
+TER_X0, TER_Y0 = -7230.0, -4731.0
 TER_X1 = TER_X0 + (TER_SIZE - 1) * TER_SQUARE
-TER_Y1 = TER_Y0 + (TER_SIZE - 1) * TER_SQUARE
+TER_Y1 = TER_Y0 + (TER_SIZE - 1) * TER_SQUARE 
 
 _to_lv95 = Transformer.from_crs("EPSG:4326", "EPSG:2056", always_xy=True)
 _to_wgs = Transformer.from_crs("EPSG:2056", "EPSG:4326", always_xy=True)
