@@ -28,18 +28,18 @@ LEVEL_DIR = os.environ.get("MAGLIASO_LEVEL_DIR") or os.path.join(BEAMNG_USER, "l
 E0, N0 = 2628000.0, 1257000.0
 K = 1.0000096             # LV95 scale factor at the origin (approx. for Sissach)
 
-# playable area: 8x8 km boundary around Sissach
-BOUNDARY = [(47.430, 7.758), (47.430, 7.864), (47.502, 7.864), (47.502, 7.758)]
+# playable area: 5x5 km boundary around Sissach
+BOUNDARY = [(47.443, 7.778), (47.443, 7.844), (47.489, 7.844), (47.489, 7.778)]
 AREA_MARGIN = 150.0
 ROUTE_MARGIN = 60.0
 EXTRA_ROAD_MARGIN = 150.0
 EXTRA_CORRIDOR = 100.0
 
-# terrain block: 8192 x 1.5m = 12288m total size. 
-# Centered around origin: -6144m to +6144m
-TER_SIZE = 8192                 # terrain samples per side
+# terrain block: 4096 x 1.5m = 6144m total size. 
+# Centered around origin: -3072m to +3072m
+TER_SIZE = 4096                 # terrain samples per side (muss eine 2er-Potenz sein)
 TER_SQUARE = 1.5                # metres per terrain sample
-TER_X0, TER_Y0 = -6144.0, -6144.0
+TER_X0, TER_Y0 = -3072.0, -3072.0
 TER_X1 = TER_X0 + (TER_SIZE - 1) * TER_SQUARE
 TER_Y1 = TER_Y0 + (TER_SIZE - 1) * TER_SQUARE
 
