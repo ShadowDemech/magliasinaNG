@@ -234,7 +234,7 @@ class MeshBuilder:
     def __init__(self):
         self.parts = {}   # material -> [verts(list of arrays), normals, uvs, count]
 
-   def add(self, material, verts, uvs=None, normals=None, tris=None, colors=None):
+    def add(self, material, verts, uvs=None, normals=None, tris=None, colors=None):
         """verts (n,3); tris (m,3) indices into verts (default: consecutive triangles);
         colors (n,4) or (4,) RGBA 0..1 vertex colours (optional, used with vertColor materials)."""
         verts = np.nan_to_num(np.asarray(verts, np.float64), nan=0.0, posinf=0.0, neginf=0.0)
